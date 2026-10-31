@@ -36,7 +36,7 @@ class DesktopLifecycleTests(unittest.TestCase):
             try:
                 with urllib.request.urlopen(base + "/", timeout=3) as response:
                     self.assertEqual(response.status, 200)
-                    self.assertIn(b"<h1>Viral Content Lab</h1>", response.read())
+                    self.assertIn(b"<h1>Social Post Tracker</h1>", response.read())
                 request = urllib.request.Request(base + "/api/state", headers={"Origin": base})
                 with urllib.request.urlopen(request, timeout=3) as response:
                     self.assertEqual(response.status, 200)

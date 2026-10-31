@@ -134,5 +134,5 @@ def make_server(host=HOST, port=PORT):
 
 if __name__ == '__main__':
     server=make_server()
-    print(f'Viral Content Lab listening at http://{HOST}:{server.server_port}')
+    print(f'Social Post Tracker listening at http://{HOST}:{server.server_port}')
     server.serve_forever()
