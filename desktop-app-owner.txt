@@ -1,0 +1,3 @@
+local-build-owner-v1
+viral-content-lab
+io.github.gmperkinsmba.viral-content-lab

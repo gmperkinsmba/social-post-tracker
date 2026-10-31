@@ -2,6 +2,7 @@
 """Local-first content experiment desk. Uses only the Python standard library."""
 import hashlib, json, os, re, secrets, socket, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from socketserver import TCPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -48,16 +49,21 @@ def save_data(d):
 
 class Handler(BaseHTTPRequestHandler):
     server_version = 'ViralLab/1.0'
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(10)
+
     def send(self, code, body, content_type='application/json; charset=utf-8'):
         b = (json.dumps(body,ensure_ascii=False).encode() if isinstance(body,(dict,list)) else body.encode() if isinstance(body,str) else body)
         self.send_response(code); self.send_header('Content-Type', content_type)
         self.send_header('Content-Length', str(len(b))); self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Cache-Control','no-store'); self.end_headers(); self.wfile.write(b)
     def authorized_origin(self):
+        port = self.server.server_port
         host = self.headers.get('Host','')
-        if host not in (f'127.0.0.1:{PORT}', f'localhost:{PORT}'): return False
+        if host not in (f'127.0.0.1:{port}', f'localhost:{port}'): return False
         origin = self.headers.get('Origin')
-        return origin is None or origin in (f'http://127.0.0.1:{PORT}', f'http://localhost:{PORT}')
+        return origin is None or origin in (f'http://127.0.0.1:{port}', f'http://localhost:{port}')
     def do_GET(self):
         if not self.authorized_origin(): return self.send(403, {'error':'Host or origin rejected'})
         p=urlparse(self.path).path
@@ -113,7 +119,20 @@ class Handler(BaseHTTPRequestHandler):
         return self.send(404, {'error':'Not found'})
     def log_message(self, fmt,*args): pass
 
+class LocalHTTPServer(ThreadingHTTPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+    def server_bind(self):
+        TCPServer.server_bind(self)
+        self.server_name = HOST
+        self.server_port = self.socket.getsockname()[1]
+
+def make_server(host=HOST, port=PORT):
+    if host != HOST:
+        raise ValueError('The local server must bind to loopback')
+    return LocalHTTPServer((HOST, port), Handler)
+
 if __name__ == '__main__':
-    server=ThreadingHTTPServer((HOST,PORT),Handler)
-    print(f'Viral Content Lab listening at http://{HOST}:{PORT}')
+    server=make_server()
+    print(f'Viral Content Lab listening at http://{HOST}:{server.server_port}')
     server.serve_forever()

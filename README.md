@@ -1,5 +1,20 @@
 # Viral Content Lab
 
+**Mac app install**
+
+Build on macOS with Python 3.12, then install the owned app:
+
+```sh
+python3.12 -m venv .desktop-venv
+.desktop-venv/bin/python -m pip install -r requirements-desktop.lock.txt
+.desktop-venv/bin/python build_desktop.py
+.desktop-venv/bin/python install_desktop.py
+```
+
+Open `~/Applications/Viral Content Lab.app` in Finder. Close its window or press Command-Q to quit. The app includes Python and uses an ad-hoc signature; it has no Developer ID signature or notarization. Drafts stay in `~/.viral-content-lab/workspace.json`. To remove the app, move it from Applications to Trash. The runtime data stays until you remove that folder yourself.
+
+For optional browser development, run `python3 server.py` and open `http://127.0.0.1:8322`. The desktop app starts and stops its own local server.
+
 First principle: Help small businesses learn which messages reach their audiences. Link each draft to reviewed claims and comparable results.
 
 Viral Content Lab keeps audience briefs, draft reviews, and post results together. The bakery and its numbers are synthetic examples. Three fixed templates suggest openings. There is no AI writing, analytics service, or publishing connection.
