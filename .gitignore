@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+*.db
+*.sqlite*
+*.jsonl
+uploads/
+exports/
+build/
+dist/
+node_modules/
+graphify-out/
+.runtime/
